@@ -1,0 +1,138 @@
+<template>
+  <el-row class="rowPosition" style="align-items: center; padding: 0 20px">
+    <el-col :span="22">
+      <h2>Position</h2>
+    </el-col>
+    <el-col :span="2">
+      <el-button class="elButton"
+          type="primary"
+        @click="formVisible()"
+      >
+        Add
+      </el-button>
+    </el-col>
+  </el-row>
+  <el-row>
+    <el-table class="table" :data="tableData" style="width: 100%">
+      <el-table-column class="columnTable" prop="id" label="Id" width="100px"/>
+      <el-table-column class="columnTable" prop="name" label="Name" width="300px"/>
+      <el-table-column class="columnTable" prop="code" label="Code" width="300px"/>
+      <el-table-column class="columnTable" prop="type" label="Type Employee" width="250px"/>
+      <el-table-column class="columnTable" prop="createdDate" label="Data" width="150px"/>
+      <el-table-column class="columnTable" label="Operations" width="120px">
+        <template #default="props">
+          <el-button link type="primary" @click="editRow(props)">
+            <font-awesome-icon icon="fa-solid fa-pencil"/>
+          </el-button>
+          <el-button link type="primary" @click="deleteRow(props)">
+            <font-awesome-icon icon="fa-solid fa-trash-can"/>
+          </el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+  </el-row>
+  <el-dialog v-model="dialogVisible" title="Position address">
+    <el-form :model="form">
+      <el-form-item label="Id">
+        <el-input v-model="form.id"/>
+      </el-form-item>
+      <el-form-item label="Name">
+        <el-input v-model="form.name"/>
+      </el-form-item>
+      <el-form-item label="Code">
+        <el-input v-model="form.code"/>
+      </el-form-item>
+      <el-form-item label="Type">
+        <el-input v-model="form.type"/>
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <span>
+        <el-button
+          type="info plain"
+          @click="removeForm()"
+        >
+          Cancel
+        </el-button>
+        <el-button
+          type="primary"
+          @click="saveForm()"
+        >
+          Save
+        </el-button>
+      </span>
+    </template>
+  </el-dialog>
+</template>
+<script>
+import useStore from "../store/store";
+export default {
+  name: 'Position',
+  setup() {
+    const { getPosition, setPosition } = useStore();
+    return{ getPosition, setPosition }
+  },
+  data() {
+    return {
+      dialogVisible: false,
+      form: {
+        index: null,
+        id: null,
+        name: "",
+        code: null,
+        type: null,
+        createdDate: "",
+      },
+      tableData: this.getPosition,
+    }
+  },
+  methods: {
+    formVisible() {
+      this.dialogVisible = true;
+      this.form = {
+        index: null,
+        id: null,
+        name: "",
+        code: null,
+        type: null,
+        createdDate: "",
+      }
+    },
+    saveForm() {
+      if (this.form.index != null) {
+        this.tableData[this.form.index] = JSON.parse(JSON.stringify(this.form))
+      } else {
+        this.form.createdDate = new Date().getDate() + "." + new Date().getMonth() + "." + new Date().getFullYear()
+        this.tableData.push(JSON.parse(JSON.stringify(this.form)))
+      }
+      this.setPosition(this.tableData);
+      this.removeForm()
+    },
+    removeForm() {
+      this.dialogVisible = false;
+      this.form = {
+        index: null,
+        id: null,
+        name: "",
+        code: null,
+        type: null,
+        createdDate: "",
+      }
+    },
+    editRow(props) {
+      const { $index, row } = props;
+      this.form = JSON.parse(JSON.stringify(row))
+      this.form.index = $index;
+      this.dialogVisible = true
+    },
+    deleteRow(props) {
+      const { $index } =props;
+      this.tableData.splice($index,1)
+      this.setPosition(this.tableData);
+    }
+  }
+}
+</script>
+<style>
+
+</style>
