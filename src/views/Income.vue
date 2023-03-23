@@ -16,7 +16,7 @@
     <el-table :data="tableData" style="width: 100%">
       <el-table-column prop="id" label="Id" width="50px"/>
       <el-table-column prop="products.name" label="Product Name" width="120px"/>
-      <el-table-column prop="price" label="Price" width="100px"/>
+      <el-table-column prop="price" label="Price" width="80px"/>
       <el-table-column prop="wareHouseId.name" label="WareHouse Name" width="140px"/>
       <el-table-column prop="room.name" label="Room Name" width="110px"/>
       <el-table-column prop="measureId.name" label="Measure Name" width="120px"/>
@@ -24,7 +24,7 @@
       <el-table-column prop="receiverId" label="Receiver Name" width="115px"/>
       <el-table-column prop="deliveryId" label="Delivery Name" width="120px"/>
       <el-table-column prop="incomeDate" label="Income Date" width="100px"/>
-      <el-table-column prop="createdDate" label="Date" width="100px"/>
+      <el-table-column prop="createdDate" label="Date" width="80px"/>
       <el-table-column label="Operations">
         <template #default="props">
           <el-button @click="editRow(props)" link type="primary">

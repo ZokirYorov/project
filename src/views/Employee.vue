@@ -17,10 +17,10 @@
         <el-table-column prop="fio" label="FIO" width="180px"/>
         <el-table-column prop="phoneNumber" label="Phone Number" width="150px"/>
         <el-table-column prop="documentNumber" label="Document Number" width="150px"/>
-        <el-table-column prop="gender" label="Gender" width="180px"/>
+        <el-table-column prop="gender" label="Gender" width="150px"/>
         <el-table-column prop="birthdate" label="Birth Date" width="150px"/>
         <el-table-column prop="position.name" label="Position Name" width="130px"/>
-        <el-table-column prop="createdDate" label="Data" width="150px"/>
+        <el-table-column prop="createdDate" label="Data" width="125px"/>
         <el-table-column label="Operations" width="120px">
           <template #default="props">
             <el-button

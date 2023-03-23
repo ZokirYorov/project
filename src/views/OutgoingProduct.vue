@@ -16,15 +16,15 @@
     <el-table :data="tableData" style="width: 100%">
       <el-table-column prop="id" label="Id" width="80px"/>
       <el-table-column prop="productsId.name" label="Products Name" width="120px"/>
-      <el-table-column prop="price" label="Price" width="80px"/>
+      <el-table-column prop="price" label="Price" width="75px"/>
       <el-table-column prop="wareHouseId.name" label="WareHouse Name" width="135px"/>
       <el-table-column prop="roomId.name" label="Room Name" width="100px"/>
       <el-table-column prop="market.name" label="Magazine Name" width="125px"/>
       <el-table-column prop="measureId.name" label="Measure Name" width="120px"/>
       <el-table-column prop="value" label="Value" width="100px"/>
-      <el-table-column prop="seller" label="Seller" width="100px"/>
-      <el-table-column prop="sellData" label="Sell Date" width="100px"/>
-      <el-table-column prop="createdDate" label="Date" width="100px"/>
+      <el-table-column prop="seller" label="Seller" width="90px"/>
+      <el-table-column prop="sellData" label="Sell Date" width="90px"/>
+      <el-table-column prop="createdDate" label="Date" width="80px"/>
       <el-table-column label="Operations">
         <template #default="props">
           <el-button

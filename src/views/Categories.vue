@@ -14,7 +14,7 @@
       <el-table-column prop="id" label="Id" width="150px"/>
       <el-table-column prop="name" label="Name" width="300px"/>
       <el-table-column prop="parent" label="Parent Name" width="250px"/>
-      <el-table-column prop="code" label="Code" width="200px"/>
+      <el-table-column prop="code" label="Code" width="180px"/>
       <el-table-column prop="createdDate" label="Data" width="200px"/>
       <el-table-column label="Operations" width="120px">
         <template #default="props">

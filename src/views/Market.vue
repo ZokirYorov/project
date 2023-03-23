@@ -14,7 +14,7 @@
       <el-table-column prop="id" label="Id" width="150px"/>
       <el-table-column prop="name" label="Name" width="400px"/>
       <el-table-column prop="wareHouseId.name" label="WareHouse Name" width="300px"/>
-      <el-table-column prop="createdDate" label="Data" width="250px"/>
+      <el-table-column prop="createdDate" label="Data" width="220px"/>
       <el-table-column label="Operations" width="120px">
         <template #default="props">
           <el-button link type="primary" @click="formEdit(props)">

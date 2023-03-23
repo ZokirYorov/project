@@ -16,7 +16,7 @@
     <el-table class="table" :data="tableData" style="width: 100%">
       <el-table-column class="columnTable" prop="id" label="Id" width="100px"/>
       <el-table-column class="columnTable" prop="name" label="Name" width="300px"/>
-      <el-table-column class="columnTable" prop="code" label="Code" width="300px"/>
+      <el-table-column class="columnTable" prop="code" label="Code" width="250px"/>
       <el-table-column class="columnTable" prop="type" label="Type Employee" width="250px"/>
       <el-table-column class="columnTable" prop="createdDate" label="Data" width="150px"/>
       <el-table-column class="columnTable" label="Operations" width="120px">

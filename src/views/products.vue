@@ -16,7 +16,7 @@
         <el-table-column prop="id" label="Id" width="100px"/>
         <el-table-column prop="name" label="Name" width="180px"/>
         <el-table-column prop="category.name" label="Categories Name" width="180px"/>
-        <el-table-column prop="createdDate" label="Data" width="180px"/>
+        <el-table-column prop="createdDate" label="Data" width="140px"/>
         <el-table-column prop="data" label="Updated Data" width="150px"/>
         <el-table-column prop="creator.name" label="Creator Name" width="180px"/>
         <el-table-column prop="tagVue.name" label="Tag Name" width="150px"/>
