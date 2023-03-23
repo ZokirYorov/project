@@ -17,7 +17,7 @@
       <el-table-column prop="id" label="Id" width="50px"/>
       <el-table-column prop="businessName" label="Business Name" width="300px"/>
       <el-table-column prop="ownerFio" label="Owner FIO" width="300px"/>
-      <el-table-column prop="ownerPhone" label="Owner Phone" width="320px"/>
+      <el-table-column prop="ownerPhone" label="Owner Phone" width="250px"/>
       <el-table-column prop="createdDate" label="Data" width="150px"/>
       <el-table-column label="Operations" width="120px">
         <template #default="props">
