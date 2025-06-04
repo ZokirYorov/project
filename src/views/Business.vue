@@ -122,7 +122,8 @@
         if (this.form.index !=null) {
           this.tableData[this.form.index] = JSON.parse(JSON.stringify(this.form))
         } else {
-          this.form.createdDate = new Date().getDate() + "." + new Date().getMonth() + "." + new Date().getFullYear()
+          let dt = new Date()
+          this.form.createdDate = new Date().getDate() + "." + dt.setMonth(dt.getMonth() + 1) + "." + new Date().getFullYear()
           this.tableData.push(JSON.parse(JSON.stringify(this.form)))
         }
         this.setBusiness(this.tableData);

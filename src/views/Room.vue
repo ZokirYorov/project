@@ -41,7 +41,7 @@
             v-model="form.wareHouseId" value-key="id"
         >
           <el-option
-              v-for="item of getWareHouse"
+              v-for="item in getWareHouse"
               :key="item.id"
               :label="item.name"
               :value="item"

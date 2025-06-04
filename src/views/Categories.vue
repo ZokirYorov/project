@@ -13,7 +13,7 @@
     <el-table :data="tableData" style="width: 100%">
       <el-table-column prop="id" label="Id" width="150px"/>
       <el-table-column prop="name" label="Name" width="300px"/>
-      <el-table-column prop="parent" label="Parent Name" width="250px"/>
+      <el-table-column prop="wareHouseId.name" label="Parent Name" width="250px"/>
       <el-table-column prop="code" label="Code" width="180px"/>
       <el-table-column prop="createdDate" label="Data" width="200px"/>
       <el-table-column label="Operations" width="120px">
@@ -36,12 +36,12 @@
       <el-form-item  label="Name">
         <el-input v-model="form.name"/>
       </el-form-item>
-      <el-form-item label="Parent Name">
+      <el-form-item label="WareHouse Name">
         <el-select
-            v-model="form.parent" value-key="id"
+            v-model="form.wareHouseId" value-key="id"
         >
           <el-option
-              v-for="item in tableData"
+              v-for="item in getWareHouse"
               :key="item.id"
               :label="item.name"
               :value="item"
@@ -71,8 +71,8 @@ import useStore from "../store/store";
 export default {
   name: "Categories",
   setup() {
-    const { getCategories, setCategories } = useStore();
-    return{ getCategories, setCategories }
+    const { getCategories, setCategories, getWareHouse, setWareHouse } = useStore();
+    return{ getCategories, setCategories, getWareHouse, setWareHouse }
   },
   data() {
     return {
@@ -81,11 +81,12 @@ export default {
         index: null,
         id: null,
         name: '',
-        parent: '',
+        wareHouseId: null,
         code: null,
         createdDate: "",
       },
       tableData: this.getCategories,
+      getWareHouse: this.getWareHouse,
       month: [1,2,3,4,5,6,7,8,9,10,11,12],
     }
   },
@@ -96,7 +97,7 @@ export default {
         index: null,
         id: null,
         name: '',
-        parent: null,
+        wareHouseId: null,
         code: null,
         createdDate: "",
       }
@@ -107,7 +108,7 @@ export default {
         index: null,
         id: null,
         name: '',
-        parent: null,
+        wareHouseId: null,
         code: null,
         createdDate: "",
       };
