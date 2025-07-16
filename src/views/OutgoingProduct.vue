@@ -12,19 +12,30 @@
       </el-button>
     </el-col>
   </el-row>
+  <CDialog
+      has-close-icon
+      :show="confirmDelete"
+      @close="confirmDelete = false"
+  >
+    <DeleteConfirm
+        v-model:show="confirmDelete"
+        title="Ushbu itemni uchirmoqchimisiz?"
+        @confirm="deleteConfirm"
+    />
+  </CDialog>
   <el-row>
     <el-table :data="tableData" style="width: 100%">
       <el-table-column prop="id" label="Id" width="60px"/>
       <el-table-column prop="productsId.name" label="Products Name" width="130px"/>
       <el-table-column prop="price" label="Price" width="80px"/>
-      <el-table-column prop="wareHouseId.name" label="WareHouse Name" width="150px"/>
+      <el-table-column prop="wareHouseId.name" label="WareHouse Name" width="140px"/>
       <el-table-column prop="roomId.name" label="Room Name" width="130px"/>
-      <el-table-column prop="market.name" label="Magazine Name" width="135px"/>
-      <el-table-column prop="measureId.name" label="Measure Name" width="135px"/>
-      <el-table-column prop="value" label="Value" width="110px"/>
+      <el-table-column prop="market.name" label="Magazine Name" width="125px"/>
+      <el-table-column prop="measureId.name" label="Measure Name" width="125px"/>
+      <el-table-column prop="value" label="Value" width="100px"/>
       <el-table-column prop="seller" label="Seller" width="100px"/>
-      <el-table-column prop="sellData" label="Sell Date" width="100px"/>
-      <el-table-column prop="createdDate" label="Date" width="110px"/>
+      <el-table-column prop="sellData" label="Sell Date" width="80px"/>
+      <el-table-column prop="createdDate" label="Date" width="100px"/>
       <el-table-column label="Operations">
         <template #default="props">
           <el-button
@@ -135,9 +146,12 @@
 
 <script>
 import useStore from "../store/store";
+import CDialog from "@/components/CDialog.vue";
+import DeleteConfirm from "@/components/DeleteConfirm.vue";
 
 export default {
   name: "OutgoingProduct",
+  components: {DeleteConfirm, CDialog},
   setup() {
     const {getOutGoingProduct, setOutGoingProduct, getProducts, setProducts, getWareHouse, setWareHouse, getRoom,setRoom, getMeasure, setMeasure, getMarket, setMarket} = useStore()
     return{getOutGoingProduct, setOutGoingProduct, getProducts, setProducts, getWareHouse, setWareHouse, getRoom,setRoom, getMeasure, setMeasure, getMarket, setMarket}
@@ -145,6 +159,8 @@ export default {
   data() {
     return{
       dialogVisible: false,
+      confirmDelete: false,
+      selectedItem: null,
       form: {
         index: null,
         id: null,
@@ -175,7 +191,8 @@ export default {
       if (this.form.index !=null) {
         this.tableData[this.form.index] = JSON.parse(JSON.stringify(this.form))
       } else {
-        this.form.createdDate = new Date().getDate() + "." + new Date().getMonth() + "." + new Date().getFullYear()
+        let date = new Date()
+        this.form.createdDate = date.getDate() + "." + (date.getMonth() + 1).toString().padStart(2, '0') + "." + date.getFullYear()
         this.tableData.push(JSON.parse(JSON.stringify(this.form)))
       }
       this.setOutGoingProduct(this.tableData)
@@ -188,9 +205,19 @@ export default {
       this.dialogVisible = true
     },
     deleteRow(props) {
-      const {$index} = props;
-      this.tableData.splice($index,1)
-      this.setOutGoingProduct(this.tableData)
+      this.selectedItem = props;
+      this.confirmDelete = true;
+    },
+    deleteConfirm() {
+      if (this.selectedItem !== null) {
+        const index = this.tableData.findIndex(item => item.id === this.selectedItem);
+        if (index !== 1) {
+          this.tableData.splice(index, 1);
+        }
+        this.setOutGoingProduct(this.tableData)
+        this.confirmDelete = false;
+        this.selectedItem = null;
+      }
     },
     removeDialog() {
       this.dialogVisible = false;

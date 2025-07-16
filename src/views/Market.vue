@@ -9,6 +9,17 @@
       </el-button>
     </el-col>
   </el-row>
+  <CDialog
+      has-close-icon
+      :show="confirmDelete"
+      @close="confirmDelete = false"
+  >
+    <DeleteConfirm
+        v-model:show="confirmDelete"
+        title="Ushbu itemni uchirmoqchimisiz?"
+        @confirm="deleteConfirm"
+    />
+  </CDialog>
   <el-row>
     <el-table :data="tableData" style="width: 100%">
       <el-table-column prop="id" label="Id" width="150px"/>
@@ -63,8 +74,11 @@
 
 <script>
 import useStore from "../store/store";
+import CDialog from "@/components/CDialog.vue";
+import DeleteConfirm from "@/components/DeleteConfirm.vue";
 export default {
   name: "Market",
+  components: {DeleteConfirm, CDialog},
   setup() {
     const { getMarket, setMarket, getWareHouse, setWareHouse } = useStore();
     return{ getMarket, setMarket, getWareHouse, setWareHouse }
@@ -72,6 +86,8 @@ export default {
   data() {
     return {
       dialogVisible: false,
+      confirmDelete: false,
+      selectedItem: null,
       form: {
         index: null,
         id: null,
@@ -81,7 +97,6 @@ export default {
       },
       tableData: this.getMarket,
       getWareHouse: this.getWareHouse,
-      month: [1,2,3,4,5,6,7,8,9,10,11,12],
     }
   },
   methods: {
@@ -109,7 +124,8 @@ export default {
       if (this.form.index != null) {
         this.tableData[this.form.index] = JSON.parse(JSON.stringify(this.form))
       } else {
-        this.form.createdDate = new Date().getDate() + "." + this.month[new Date().getMonth()] + "." + new Date().getFullYear()
+        let date = new Date()
+        this.form.createdDate = date.getDate() + "." + (date.getMonth() + 1).toString().padStart(2, '0') + "." + date.getFullYear()
         this.tableData.push(JSON.parse(JSON.stringify(this.form)))
       }
       this.setMarket(this.tableData)
@@ -122,9 +138,19 @@ export default {
       this.dialogVisible = true
     },
     formDelete(props) {
-      const { $index } = props;
-      this.tableData.splice($index,1)
-      this.setMarket(this.tableData)
+      this.selectedItem = props;
+      this.confirmDelete = true;
+    },
+    deleteConfirm() {
+      if (this.selectedItem !== null) {
+        const index = this.tableData.findIndex(item => item.id === this.selectedItem);
+        if (index !==1) {
+          this.tableData.splice(index, 1);
+        }
+        this.setMarket(this.tableData)
+        this.confirmDelete = false;
+        this.selectedItem = null;
+      }
     }
   }
 }

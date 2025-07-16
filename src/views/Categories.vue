@@ -9,6 +9,18 @@
       </el-button>
     </el-col>
   </el-row>
+  <CDialog
+      has-close-icon
+      :show="confirmDelete"
+      @close="confirmDelete = false"
+      body-class="justify-center bg-blue-800 text-center px-4 pb-8"
+  >
+    <DeleteConfirm
+        v-model:show="confirmDelete"
+        title="Ushbu itemni uchirmoqchimisiz?"
+        @confirm="deleteConfirm"
+    />
+  </CDialog>
   <el-row>
     <el-table :data="tableData" style="width: 100%">
       <el-table-column prop="id" label="Id" width="150px"/>
@@ -67,9 +79,12 @@
 
 <script>
 import useStore from "../store/store";
+import CDialog from "@/components/CDialog.vue";
+import DeleteConfirm from "@/components/DeleteConfirm.vue";
 
 export default {
   name: "Categories",
+  components: {DeleteConfirm, CDialog},
   setup() {
     const { getCategories, setCategories, getWareHouse, setWareHouse } = useStore();
     return{ getCategories, setCategories, getWareHouse, setWareHouse }
@@ -77,6 +92,8 @@ export default {
   data() {
     return {
       dialogVisible: false,
+      confirmDelete: false,
+      selectedCategory: null,
       form: {
         index: null,
         id: null,
@@ -87,7 +104,6 @@ export default {
       },
       tableData: this.getCategories,
       getWareHouse: this.getWareHouse,
-      month: [1,2,3,4,5,6,7,8,9,10,11,12],
     }
   },
   methods: {
@@ -118,7 +134,8 @@ export default {
       if (this.form.index != null) {
         this.tableData[this.form.index] = JSON.parse(JSON.stringify(this.form))
       } else {
-        this.form.createdDate = new Date().getDate() + "." + this.month[new Date().getMonth()]  + "." + new Date().getFullYear()
+        let date = new Date();
+        this.form.createdDate = new Date().getDate() + "." + (date.getMonth() + 1).toString().padStart(2, '0')  + "." + date.getFullYear()
         this.tableData.push(JSON.parse(JSON.stringify(this.form)))
       }
       this.dialogVisible = false;
@@ -132,9 +149,19 @@ export default {
       this.dialogVisible = true
     },
     formDelete(props) {
-      const { $index } = props;
-      this.tableData.splice($index,1)
-      this.setCategories(this.tableData)
+      this.selectedCategory = props;
+      this.confirmDelete = true;
+    },
+    deleteConfirm(){
+      if (this.selectedCategory !== null) {
+        const index = this.tableData.findIndex(item => item.id === this.selectedCategory);
+       if (index !== 1) {
+         this.tableData.splice(index, 1);
+       }
+       this.setCategories(this.tableData)
+        this.confirmDelete = false;
+       this.selectedCategory = null;
+      }
     }
   }
 }

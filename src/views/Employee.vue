@@ -11,6 +11,18 @@
         >Add</el-button>
       </el-col>
     </el-row>
+    <CDialog
+        has-close-icon
+        :show="confirmDelete"
+        @close="confirmDelete = false"
+        body-class="justify-center bg-blue-800 text-center px-4 pb-8"
+    >
+      <DeleteConfirm
+          v-model:show="confirmDelete"
+          title="Ushbu itemni uchirmoqchimisiz?"
+          @confirm="deleteConfirm"
+      />
+    </CDialog>
     <el-row>
       <el-table :data="tableData" style="width: 100%">
         <el-table-column prop="id" label="Id" width="50px"/>
@@ -92,9 +104,12 @@
 </template>
 <script>
 import useStore from "../store/store";
+import CDialog from "@/components/CDialog.vue";
+import DeleteConfirm from "@/components/DeleteConfirm.vue";
 
 export default {
   name: 'Employee',
+  components: {DeleteConfirm, CDialog},
   setup() {
     const { getEmployee, setEmployee, getPosition, setPosition } = useStore();
     return { getEmployee, setEmployee, getPosition, setPosition };
@@ -102,6 +117,8 @@ export default {
   data() {
     return {
       formVisible: false,
+      confirmDelete: false,
+      selectedEmployee: null,
       form: {
         index: null,
         id: null,
@@ -115,7 +132,6 @@ export default {
       },
       tableData: this.getEmployee,
       getPosition: this.getPosition,
-      month: [1,2,3,4,5,6,7,8,9,10,11,12],
     }
   },
   methods: {
@@ -141,7 +157,8 @@ export default {
         if (this.form.index != null) {
           this.tableData[this.form.index] = JSON.parse(JSON.stringify(this.form))
         } else {
-          this.form.createdDate = new Date().getDate() + "." + this.month[new Date().getMonth()] + "." + new Date().getFullYear()
+          let date = new Date();
+          this.form.createdDate = date.getDate() + "." + (date.getMonth() + 1).toString().padStart(2, '0') + "." + date.getFullYear()
           this.tableData.push(JSON.parse(JSON.stringify(this.form)))
         }
         this.setEmployee(this.tableData);
@@ -167,9 +184,19 @@ export default {
       this.formVisible = true;
     },
     rowDelete(props) {
-      const {$index } = props;
-      this.tableData.splice($index, 1);
-      this.setEmployee(this.tableData)
+      this.selectedEmployee = props;
+      this.confirmDelete = true;
+    },
+    deleteConfirm() {
+      if (this.selectedEmployee !== null) {
+        const index = this.tableData.findIndex(item => item.id === this.selectedEmployee);
+        if (index !==1 ){
+          this.tableData.splice(index, 1);
+        }
+        this.setEmployee(this.tableData);
+        this.confirmDelete = false;
+        this.selectedEmployee = null;
+      }
     }
   },
 }

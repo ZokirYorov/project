@@ -9,6 +9,17 @@
       </el-button>
     </el-col>
   </el-row>
+  <CDialog
+      has-close-icon
+      :show="confirmDelete"
+      @close="confirmDelete = false"
+  >
+    <DeleteConfirm
+        v-model:show="confirmDelete"
+        title="Ushbu itemni uchirmoqchimisiz?"
+        @confirm="deleteConfirm"
+    />
+  </CDialog>
   <el-row>
     <el-table :data="tableData" style="width: 100%">
       <el-table-column prop="id" label="Id" width="150px"/>
@@ -67,8 +78,11 @@
 
 <script>
 import useStore from "../store/store";
+import CDialog from "@/components/CDialog.vue";
+import DeleteConfirm from "@/components/DeleteConfirm.vue";
 export default {
   name: "Room",
+  components: {DeleteConfirm, CDialog},
   setup() {
     const { getRoom, setRoom,  getWareHouse, setWareHouse} = useStore();
     return{ getRoom, setRoom, getWareHouse, setWareHouse }
@@ -76,6 +90,8 @@ export default {
   data() {
     return {
       dialogVisible: false,
+      confirmDelete: false,
+      selectedItems: null,
       form: {
         index: null,
         id: null,
@@ -115,7 +131,8 @@ export default {
       if (this.form.index != null) {
         this.tableData[this.form.index] = JSON.parse(JSON.stringify(this.form))
       } else {
-        this.form.createdDate = new Date().getDate() + "." + new Date().getMonth() + "." + new Date().getFullYear()
+        let data = new Date()
+        this.form.createdDate = data.getDate() + "." + String(data.getMonth() + 1).padStart(2, '0') + "." + data.getFullYear()
         this.tableData.push(JSON.parse(JSON.stringify(this.form)))
       }
       this.setRoom(this.tableData)
@@ -128,9 +145,19 @@ export default {
       this.dialogVisible = true
     },
     formDelete(props) {
-      const { $index } = props;
-      this.tableData.splice($index,1)
-      this.setRoom(this.tableData)
+      this.selectedItems = props;
+      this.confirmDelete = true;
+    },
+    deleteConfirm() {
+      if (this.selectedItems !== null) {
+        const index = this.tableData.findIndex(item => item.id === this.selectedItems);
+        if (index !== 1) {
+          this.tableData.splice(index, 1);
+        }
+        this.setRoom(this.tableData)
+        this.confirmDelete = false;
+        this.selectedItems = null;
+      }
     }
   }
 }

@@ -12,6 +12,17 @@
       </el-button>
     </el-col>
   </el-row>
+  <CDialog
+      has-close-icon
+      :show="confirmDelete"
+      @close="confirmDelete = false"
+  >
+    <DeleteConfirm
+        v-model:show="confirmDelete"
+        title="Ushbu itemni uchirmoqchimisiz?"
+        @confirm="deleteConfirm"
+    />
+  </CDialog>
   <el-row>
     <el-table :data="tableData" style="width: 100%">
       <el-table-column prop="id" label="Id" width="50px"/>
@@ -28,7 +39,7 @@
             <font-awesome-icon icon="fa-solid fa-trash-can"/>
           </el-button>
         </template>
-      </el-table-column>>
+      </el-table-column>
     </el-table>
   </el-row>
   <el-dialog v-model="dialogVisible" title="Business Form">
@@ -66,10 +77,13 @@
 </template>
 <script>
  import useStore from "../store/store";
+ import CDialog from "@/components/CDialog.vue";
+ import DeleteConfirm from "@/components/DeleteConfirm.vue";
  import axios from "axios";
 
  export default {
    name: 'business',
+   components: {DeleteConfirm, CDialog},
    setup() {
      const { getBusiness, setBusiness } = useStore();
      return { getBusiness, setBusiness }
@@ -77,6 +91,8 @@
    data() {
      return {
        dialogVisible: false,
+       confirmDelete: false,
+       selectedItems: null,
         form: {
          index: null,
           id: null,
@@ -86,7 +102,12 @@
           createdDate: "",
         },
        tableData: this.getBusiness,
-       getBusiness: this.getBusiness
+       getBusiness: this.getBusiness,
+       month: [
+           'January', 'February', 'March', 'April',
+           'May', 'June', 'July', 'August', 'September',
+           'October', 'November', 'December',
+       ]
      }
    },
    methods: {
@@ -121,9 +142,9 @@
      saveForm() {
         if (this.form.index !=null) {
           this.tableData[this.form.index] = JSON.parse(JSON.stringify(this.form))
-        } else {
+         } else {
           let dt = new Date()
-          this.form.createdDate = new Date().getDate() + "." + dt.setMonth(dt.getMonth() + 1) + "." + new Date().getFullYear()
+          this.form.createdDate = dt.getDate() + "." + (dt.getMonth() + 1).toString().padStart(2, '0') + "." + dt.getFullYear()
           this.tableData.push(JSON.parse(JSON.stringify(this.form)))
         }
         this.setBusiness(this.tableData);
@@ -136,9 +157,19 @@
       this.dialogVisible = true;
      },
      deleteRow(props) {
-      const {$index } = props;
-      this.tableData.splice($index, 1)
-       this.setBusiness(this.tableData);
+      this.selectedItems = props;
+       this.confirmDelete = true;
+     },
+     deleteConfirm(){
+      if (this.selectedItems !== null ) {
+        const index = this.tableData.findIndex(item => item.id === this.selectedItems);
+        if (index !== 1) {
+          this.tableData.splice(index, 1);
+        }
+        this.setBusiness(this.tableData);
+        this.confirmDelete = false;
+        this.selectedItems = null;
+      }
      }
    },
    // created() {

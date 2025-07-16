@@ -12,6 +12,17 @@
       </el-button>
     </el-col>
   </el-row>
+  <CDialog
+      has-close-icon
+      :show="deleteIncome"
+      @close="deleteIncome = false"
+  >
+    <DeleteConfirm
+        v-model:show="deleteIncome"
+        title="Ushbu itemni uchirmoqchimisiz?"
+        @confirm="deleteIncomeItem"
+    />
+  </CDialog>
   <el-row>
     <el-table :data="tableData" style="width: 100%">
       <el-table-column prop="id" label="Id" width="50px"/>
@@ -24,7 +35,7 @@
       <el-table-column prop="receiverId" label="Receiver Name" width="115px"/>
       <el-table-column prop="deliveryId" label="Delivery Name" width="120px"/>
       <el-table-column prop="incomeDate" label="Income Date" width="100px"/>
-      <el-table-column prop="createdDate" label="Date" width="80px"/>
+      <el-table-column prop="createdDate" label="Date" width="100px"/>
       <el-table-column label="Operations">
         <template #default="props">
           <el-button @click="editRow(props)" link type="primary">
@@ -124,9 +135,12 @@
 
 <script>
 import useStore from "../store/store";
+import CDialog from "@/components/CDialog.vue";
+import DeleteConfirm from "@/components/DeleteConfirm.vue";
 
 export default {
   name: "Income",
+  components: {DeleteConfirm, CDialog},
   setup() {
     const {getIncome, setIncome, getProducts, setProducts, getWareHouse, setWareHouse, setRoom, getRoom, setMeasure,getMeasure } = useStore();
     return {getIncome, setIncome, getProducts, setProducts, getWareHouse, setWareHouse, setRoom, getRoom, setMeasure,getMeasure}
@@ -134,6 +148,8 @@ export default {
   data() {
     return{
       dialogClick: false,
+      deleteIncome: false,
+      selectedIncomeItem: null,
       form: {
         index: null,
         id: null,
@@ -153,7 +169,6 @@ export default {
       getWareHouse: this.getWareHouse,
       getRoom: this.getRoom,
       getMeasure: this.getMeasure,
-      month: [1,2,3,4,5,6,7,8,9,10,11,12],
     }
   },
   methods: {
@@ -165,7 +180,8 @@ export default {
       if (this.form.index !=null) {
         this.tableData[this.form.index] = JSON.parse(JSON.stringify(this.form))
       } else {
-        this.form.createdDate = new Date().getDate() + "." + this.month[new Date().getMonth()] + "." + new Date().getFullYear()
+        let date = new Date();
+        this.form.createdDate = date.getDate() + "." + (date.getMonth() + 1).toString().padStart(2, '0') + "." + date.getFullYear()
         this.tableData.push(JSON.parse(JSON.stringify(this.form)))
       }
       this.setIncome(this.tableData)
@@ -178,9 +194,19 @@ export default {
       this.dialogClick = true
     },
     deleteRow(props) {
-      const {$index} = props;
-      this.tableData.splice($index,1)
-      this.setIncome(this.tableData)
+      this.selectedIncomeItem = props;
+      this.deleteIncome = true;
+    },
+    deleteIncomeItem(){
+      if (this.selectedIncomeItem !== null) {
+        const index = this.tableData.findIndex(item => item.id === this.selectedIncomeItem);
+        if (index !== 1) {
+          this.tableData.splice(index, 1);
+        }
+        this.setIncome(this.tableData);
+        this.deleteIncome = false;
+        this.selectedIncomeItem = null;
+      }
     },
     removeDialog() {
       this.dialogClick = false;

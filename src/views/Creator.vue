@@ -12,6 +12,18 @@
       </el-button>
     </el-col>
   </el-row>
+  <CDialog
+      has-close-icon
+      :show="showDeleteItem"
+      @close="showDeleteItem = false"
+      body-class="justify-center bg-blue-800 text-center px-4 pb-8"
+  >
+    <DeleteConfirm
+        v-model:show="showDeleteItem"
+        title="Ushbu itemni uchirmoqchimisiz?"
+        @confirm="deleteFormItem"
+    />
+  </CDialog>
   <el-row>
     <el-table :data="tableData" style="width: 100%">
       <el-table-column prop="id" label="Id" width="180px"/>
@@ -57,9 +69,12 @@
 
 <script>
 import useStore from "../store/store";
+import CDialog from "@/components/CDialog.vue";
+import DeleteConfirm from "@/components/DeleteConfirm.vue";
 
 export default {
   name: "Creator",
+  components: {DeleteConfirm, CDialog},
   setup() {
     const { getCreator, setCreator } = useStore();
     return { getCreator, setCreator }
@@ -67,6 +82,8 @@ export default {
   data() {
     return {
       dialogVisible: false,
+      showDeleteItem: false,
+      selectedItem: null,
       form: {
         index: null,
         id: null,
@@ -75,7 +92,6 @@ export default {
         createdDate: "",
       },
       tableData: this.getCreator,
-      month: [1,2,3,4,5,6,7,8,9,10,11,12],
     }
   },
   methods: {
@@ -93,7 +109,8 @@ export default {
       if (this.form.index != null) {
         this.tableData[this.form.index] =JSON.parse(JSON.stringify(this.form))
       } else {
-        this.form.createdDate = new Date().getDate() + "." + this.month[new Date().getMonth()] + "." + new Date().getFullYear()
+        let date = new Date();
+        this.form.createdDate = date.getDate() + "." + (date.getMonth()+1).toString().padStart(2, '0') + "." + date.getFullYear()
         this.tableData.push(JSON.parse(JSON.stringify(this.form)))
       }
       this.setCreator(this.tableData)
@@ -106,9 +123,19 @@ export default {
       this.dialogVisible = true
     },
     deleteRow(props) {
-      const { $index } = props;
-      this.tableData.splice($index,1)
-      this.setCreator(this.tableData)
+      this.selectedItem = props;
+      this.showDeleteItem = true;
+    },
+    deleteFormItem(){
+      if (this.selectedItem !== null) {
+        const index = this.tableData.findIndex(item => item.id === this.selectedItem);
+        if (index !== 1) {
+          this.tableData.splice(index, 1);
+        }
+        this.setCreator(this.tableData);
+        this.showDeleteItem = false;
+        this.selectedItem = null;
+      }
     },
     removeDialog() {
       this.dialogVisible = false;

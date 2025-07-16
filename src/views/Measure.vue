@@ -12,6 +12,17 @@
       </el-button>
     </el-col>
   </el-row>
+  <CDialog
+      has-close-icon
+      :show="confirmDelete"
+      @close="confirmDelete = false"
+  >
+    <DeleteConfirm
+        v-model:show="confirmDelete"
+        title="Ushbu itemni uchirmoqchimisiz?"
+        @confirm="deleteConfirm"
+    />
+  </CDialog>
   <el-row>
     <el-table :data="tableData" style="width: 100%">
       <el-table-column prop="id" label="Id" width="180px"/>
@@ -57,9 +68,12 @@
 
 <script>
 import useStore from "../store/store";
+import CDialog from "@/components/CDialog.vue";
+import DeleteConfirm from "@/components/DeleteConfirm.vue";
 
 export default {
   name: "Measure",
+  components: {DeleteConfirm, CDialog},
   setup() {
     const { getMeasure, setMeasure } = useStore();
     return { getMeasure, setMeasure }
@@ -67,6 +81,8 @@ export default {
   data() {
     return {
       dialogVisible: false,
+      confirmDelete: false,
+      selectedItems: null,
       form: {
         index: null,
         id: null,
@@ -75,7 +91,6 @@ export default {
         createdDate: '',
       },
       tableData: this.getMeasure,
-      month: [1,2,3,4,5,6,7,8,9,10,11,12],
     }
   },
   methods: {
@@ -93,7 +108,8 @@ export default {
       if (this.form.index != null) {
         this.tableData[this.form.index] =JSON.parse(JSON.stringify(this.form))
       } else {
-        this.form.createdDate = new Date().getDate() + "." + this.month[new Date().getMonth()] + "." + new Date().getFullYear()
+        let date = new Date()
+        this.form.createdDate = date.getDate() + "." + (date.getMonth() + 1).toString().padStart(2, '0') + "." + date.getFullYear()
         this.tableData.push(JSON.parse(JSON.stringify(this.form)))
       }
       this.setMeasure(this.tableData)
@@ -106,9 +122,19 @@ export default {
       this.dialogVisible = true
     },
     deleteRow(props) {
-      const { $index } = props;
-      this.tableData.splice($index,1)
-      this.setMeasure(this.tableData)
+      this.selectedItems = props;
+      this.confirmDelete = true;
+    },
+    deleteConfirm() {
+      if (this.selectedItems !== null) {
+        const index = this.tableData.findIndex(item => item.id === this.selectedItems);
+        if (index !== 1) {
+          this.tableData.splice(index, 1);
+        }
+        this.setMeasure(this.tableData);
+        this.confirmDelete = false;
+        this.selectedItems = null;
+      }
     },
     removeDialog() {
       this.dialogVisible = false;

@@ -12,14 +12,26 @@
       </el-button>
     </el-col>
   </el-row>
+  <CDialog
+      has-close-icon
+      :show="currentDelete"
+      @close="currentDelete = false"
+      body-class="justify-center bg-blue-800 text-center px-4 pb-8"
+  >
+    <DeleteConfirm
+        v-model:show="currentDelete"
+        title="Ushbu itemni uchirmoqchimisiz?"
+        @confirm="deleteConfirm"
+    />
+  </CDialog>
   <el-row>
     <el-table :data="tableData" style="width: 100%">
       <el-table-column prop="id" label="Id" width="150px"/>
       <el-table-column prop="products.name" label="Products Name" width="180px"/>
-      <el-table-column prop="amount" label="Amount" width="200px"/>
+      <el-table-column prop="amount" label="Amount" width="150px"/>
       <el-table-column prop="measureId.name" label="Measure Name" width="180px"/>
-      <el-table-column prop="wareHouseId.name" label="WareHouse Name" width="140px"/>
-      <el-table-column prop="roomId.name" label="Room Name" width="120px"/>
+      <el-table-column prop="wareHouseId.name" label="WareHouse Name" width="160px"/>
+      <el-table-column prop="roomId.name" label="Room Name" width="150px"/>
       <el-table-column prop="createdDate" label="Date" width="100px"/>
       <el-table-column label="Operations">
         <template #default="props">
@@ -113,9 +125,12 @@
 
 <script>
 import useStore from "../store/store";
+import CDialog from "@/components/CDialog.vue";
+import DeleteConfirm from "@/components/DeleteConfirm.vue";
 
 export default {
   name: "CurrentProduct",
+  components: {DeleteConfirm, CDialog},
   setup() {
     const {getCurrentProduct, setCurrentProduct, getProducts,setProducts, getMeasure, setMeasure, getWareHouse, setWareHouse, getRoom, setRoom} = useStore();
     return {getCurrentProduct, setCurrentProduct, getProducts,setProducts, getMeasure, setMeasure, getWareHouse, setWareHouse, getRoom, setRoom}
@@ -123,6 +138,8 @@ export default {
   data() {
     return{
       clickDialogVisible: false,
+      currentDelete: false,
+      selectedCurrent: null,
       form: {
         index: null,
         id: null,
@@ -138,7 +155,6 @@ export default {
       getMeasure: this.getMeasure,
       getWareHouse: this.getWareHouse,
       getRoom: this.getRoom,
-      month: [1,2,3,4,5,6,7,8,9,10,11,12],
     }
   },
   methods: {
@@ -149,7 +165,8 @@ export default {
       if (this.form.index !==null) {
         this.tableData[this.form.index] = JSON.parse(JSON.stringify(this.form))
       } else {
-        this.form.createdDate = new Date().getDate() + "." + this.month[new Date().getMonth()] + "." + new Date().getFullYear()
+        let date = new Date();
+        this.form.createdDate = date.getDate() + "." + (date.getMonth() + 1).toString().padStart(2, '0') + "." + date.getFullYear()
         this.tableData.push(JSON.parse(JSON.stringify(this.form)))
       }
       this.setCurrentProduct(this.tableData)
@@ -162,9 +179,19 @@ export default {
       this.clickDialogVisible = true
     },
     deleteRow(props) {
-      const {$index} = props
-      this.tableData.splice($index,1)
-      this.setCurrentProduct(this.tableData)
+      this.selectedCurrent = props;
+      this.currentDelete = true;
+    },
+    deleteConfirm() {
+      if (this.selectedCurrent !== null) {
+        const index = this.tableData.findIndex(item => item.id === this.selectedCurrent);
+        if (index !== 1) {
+          this.tableData.splice(index, 1);
+        }
+        this.setCurrentProduct(this.tableData);
+        this.currentDelete = false;
+        this.selectedCurrent = null;
+      }
     },
     removeDialog() {
       this.clickDialogVisible = false;
