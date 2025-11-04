@@ -32,9 +32,9 @@
       <el-table-column prop="roomId.name" label="Room Name" width="130px"/>
       <el-table-column prop="market.name" label="Magazine Name" width="125px"/>
       <el-table-column prop="measureId.name" label="Measure Name" width="125px"/>
-      <el-table-column prop="value" label="Value" width="100px"/>
+      <el-table-column prop="value" label="Value" width="80px"/>
       <el-table-column prop="seller" label="Seller" width="100px"/>
-      <el-table-column prop="sellData" label="Sell Date" width="80px"/>
+      <el-table-column prop="sellData" label="Sell Date" width="100px"/>
       <el-table-column prop="createdDate" label="Date" width="100px"/>
       <el-table-column label="Operations">
         <template #default="props">

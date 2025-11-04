@@ -13,7 +13,7 @@
 <script>
 export default {
   name: "Header",
-  data(){
+  data() {
     return {
 
     }
@@ -42,7 +42,7 @@ export default {
   padding-left: 15px;
   font-size: 20px;
   gap: 10px;
-  justify-content: space-evenly;
+  border-left: 1px solid #D1D5DC;
   align-items: center;
 }
 </style>
